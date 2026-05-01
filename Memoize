@@ -1,0 +1,21 @@
+/**
+ * @param {Function} fn
+ * @return {Function}
+ */
+function memoize(fn) {
+    const cache = new Map();
+    
+    return function(...args) {
+        // Create a unique key based on the arguments
+        // Joining with a comma ensures (1, 2) is different from (12)
+        const key = args.join(',');
+
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+
+        const result = fn(...args);
+        cache.set(key, result);
+        return result;
+    }
+}
