@@ -1,0 +1,45 @@
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> getSkyline(int[][] buildings) {
+        List<int[]> events = new ArrayList<>();
+        for (int[] b : buildings) {
+            // Start event: use negative height to sort tallest first for same x
+            events.add(new int[]{b[0], -b[2]});
+            // End event: use positive height
+            events.add(new int[]{b[1], b[2]});
+        }
+        
+        // Sort events: by x, then by height
+        Collections.sort(events, (a, b) -> {
+            if (a[0] != b[0]) return a[0] - b[0];
+            return a[1] - b[1];
+        });
+
+        List<List<Integer>> result = new ArrayList<>();
+        // Max-heap using TreeMap to track heights (height -> count)
+        TreeMap<Integer, Integer> heights = new TreeMap<>(Collections.reverseOrder());
+        heights.put(0, 1); // Sentinel value for ground level
+        int prevHeight = 0;
+
+        for (int[] e : events) {
+            int x = e[0];
+            int h = e[1];
+
+            if (h < 0) { // Start event
+                heights.put(-h, heights.getOrDefault(-h, 0) + 1);
+            } else { // End event
+                int count = heights.get(h);
+                if (count == 1) heights.remove(h);
+                else heights.put(h, count - 1);
+            }
+
+            int currHeight = heights.firstKey();
+            if (currHeight != prevHeight) {
+                result.add(Arrays.asList(x, currHeight));
+                prevHeight = currHeight;
+            }
+        }
+        return result;
+    }
+}
