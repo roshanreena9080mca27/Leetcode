@@ -1,0 +1,27 @@
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    int countPermutations(vector<int>& complexity) {
+        int n = complexity.size();
+        long long MOD = 1e9 + 7;
+
+        // Step 1: Check if every computer i > 0 can be unlocked.
+        // Computer 0 must have a complexity strictly lower than all others.
+        for (int i = 1; i < n; ++i) {
+            if (complexity[i] <= complexity[0]) {
+                return 0; 
+            }
+        }
+
+        // Step 2: Calculate (n-1)! modulo 10^9 + 7
+        long long factorial = 1;
+        for (int i = 1; i < n; ++i) {
+            factorial = (factorial * i) % MOD;
+        }
+
+        return (int)factorial;
+    }
+};
