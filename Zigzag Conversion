@@ -1,0 +1,37 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    string convert(string s, int numRows) {
+        // Edge case: If only one row or string is too short, no zigzag possible
+        if (numRows == 1 || s.length() <= numRows) return s;
+
+        // Create a list of strings, one for each row
+        vector<string> rows(min(int(s.length()), numRows));
+        int currentRow = 0;
+        bool goingDown = false;
+
+        for (char c : s) {
+            rows[currentRow] += c;
+            
+            // If we hit the top or bottom row, reverse the direction
+            if (currentRow == 0 || currentRow == numRows - 1) {
+                goingDown = !goingDown;
+            }
+            
+            // Move up or down
+            currentRow += goingDown ? 1 : -1;
+        }
+
+        // Combine all rows into a single string
+        string result;
+        for (string row : rows) {
+            result += row;
+        }
+        
+        return result;
+    }
+};
