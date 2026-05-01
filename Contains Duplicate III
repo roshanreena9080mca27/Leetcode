@@ -1,0 +1,44 @@
+import java.util.*;
+
+class Solution {
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int indexDiff, int valueDiff) {
+        if (valueDiff < 0) return false;
+        
+        // Use a map to store one element per bucket
+        Map<Long, Long> buckets = new HashMap<>();
+        long width = (long)valueDiff + 1;
+
+        for (int i = 0; i < nums.length; i++) {
+            long val = (long)nums[i];
+            long bucketId = getBucketId(val, width);
+
+            // 1. Check if the same bucket already has an element
+            if (buckets.containsKey(bucketId)) return true;
+
+            // 2. Check the bucket to the left
+            if (buckets.containsKey(bucketId - 1) && Math.abs(val - buckets.get(bucketId - 1)) <= valueDiff) {
+                return true;
+            }
+
+            // 3. Check the bucket to the right
+            if (buckets.containsKey(bucketId + 1) && Math.abs(val - buckets.get(bucketId + 1)) <= valueDiff) {
+                return true;
+            }
+
+            // Add current value to its bucket
+            buckets.put(bucketId, val);
+
+            // Maintain sliding window: remove element that is out of indexDiff range
+            if (i >= indexDiff) {
+                buckets.remove(getBucketId((long)nums[i - indexDiff], width));
+            }
+        }
+
+        return false;
+    }
+
+    private long getBucketId(long val, long width) {
+        // Handle negative numbers correctly for bucket indexing
+        return val < 0 ? (val + 1) / width - 1 : val / width;
+    }
+}
