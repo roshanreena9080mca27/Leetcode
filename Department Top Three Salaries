@@ -1,0 +1,18 @@
+import pandas as pd
+
+def top_three_salaries(employee: pd.DataFrame, department: pd.DataFrame) -> pd.DataFrame:
+    # 1. Merge the employee and department tables
+    df = employee.merge(department, left_on='departmentId', right_on='id', suffixes=('', '_dept'))
+    
+    # 2. Rank unique salaries within each department using 'dense' method
+    # 'dense' ensures that if salaries are tied, they share a rank and no numbers are skipped
+    df['rnk'] = df.groupby('name_dept')['salary'].rank(method='dense', ascending=False)
+    
+    # 3. Filter for the top 3 ranks
+    high_earners = df[df['rnk'] <= 3]
+    
+    # 4. Select and rename the required columns
+    result = high_earners[['name_dept', 'name', 'salary']]
+    result.columns = ['Department', 'Employee', 'Salary']
+    
+    return result
