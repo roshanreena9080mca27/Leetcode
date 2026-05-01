@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int maxSumDivThree(vector<int>& nums) {
+        int total_sum = 0;
+        vector<int> rem1, rem2;
+
+        for (int n : nums) {
+            total_sum += n;
+            if (n % 3 == 1) rem1.push_back(n);
+            else if (n % 3 == 2) rem2.push_back(n);
+        }
+
+        int remainder = total_sum % 3;
+        if (remainder == 0) return total_sum;
+
+        sort(rem1.begin(), rem1.end());
+        sort(rem2.begin(), rem2.end());
+
+        int diff = 2e9; // Large value placeholder
+
+        if (remainder == 1) {
+            // Case 1: Remove smallest rem1
+            if (!rem1.empty()) diff = min(diff, rem1[0]);
+            // Case 2: Remove two smallest rem2
+            if (rem2.size() >= 2) diff = min(diff, rem2[0] + rem2[1]);
+        } else { // remainder == 2
+            // Case 1: Remove smallest rem2
+            if (!rem2.empty()) diff = min(diff, rem2[0]);
+            // Case 2: Remove two smallest rem1
+            if (rem1.size() >= 2) diff = min(diff, rem1[0] + rem1[1]);
+        }
+
+        return total_sum - diff;
+    }
+};
