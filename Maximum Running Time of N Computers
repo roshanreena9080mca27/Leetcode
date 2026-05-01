@@ -1,0 +1,42 @@
+#include <vector>
+#include <numeric>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    long long maxRunTime(int n, vector<int>& batteries) {
+        long long low = 0;
+        long long high = 0;
+        for (int b : batteries) high += b;
+        high /= n;
+
+        long long ans = 0;
+        while (low <= high) {
+            long long mid = low + (high - low) / 2;
+            
+            if (canRun(n, batteries, mid)) {
+                ans = mid;
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return ans;
+    }
+
+private:
+    bool canRun(int n, vector<int>& batteries, long long target) {
+        long long total_energy = 0;
+        long long required_energy = (long long)n * target;
+        
+        for (int b : batteries) {
+            // A battery cannot contribute more than 'target' minutes 
+            // because it can only be in one computer at a time.
+            total_energy += min((long long)b, target);
+        }
+        
+        return total_energy >= required_energy;
+    }
+};
