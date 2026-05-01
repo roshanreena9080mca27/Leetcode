@@ -1,0 +1,39 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public String getPermutation(int n, int k) {
+        List<Integer> numbers = new ArrayList<>();
+        int[] factorial = new int[n + 1];
+        StringBuilder sb = new StringBuilder();
+
+        // 1. Create a list of numbers to pick from: [1, 2, 3, ..., n]
+        // 2. Precompute factorial array
+        factorial[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            factorial[i] = factorial[i - 1] * i;
+            numbers.add(i);
+        }
+
+        // Adjust k to be 0-indexed for easier calculations
+        k--;
+
+        // 3. Find digits one by one
+        for (int i = 1; i <= n; i++) {
+            // How many permutations exist if we fix the current digit?
+            int groupSize = factorial[n - i];
+            
+            // Determine the index of the number to use
+            int index = k / groupSize;
+            
+            // Append the number and remove it from the list
+            sb.append(numbers.get(index));
+            numbers.remove(index);
+            
+            // Update k for the next iteration
+            k %= groupSize;
+        }
+
+        return sb.toString();
+    }
+}
