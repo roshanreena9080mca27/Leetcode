@@ -1,0 +1,30 @@
+class Solution {
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length == 0) return 0;
+
+        // buy1: money left after first purchase (initially we spend prices[0])
+        int buy1 = -prices[0];
+        // sell1: money left after first sale
+        int sell1 = 0;
+        // buy2: money left after second purchase (re-investing sell1 profit)
+        int buy2 = -prices[0];
+        // sell2: total money left after second sale
+        int sell2 = 0;
+
+        for (int i = 1; i < prices.length; i++) {
+            // Best price to buy the first stock
+            buy1 = Math.max(buy1, -prices[i]);
+            
+            // Best profit after selling the first stock
+            sell1 = Math.max(sell1, buy1 + prices[i]);
+            
+            // Best profit remaining after buying the second stock
+            buy2 = Math.max(buy2, sell1 - prices[i]);
+            
+            // Final max profit after selling the second stock
+            sell2 = Math.max(sell2, buy2 + prices[i]);
+        }
+
+        return sell2;
+    }
+}
