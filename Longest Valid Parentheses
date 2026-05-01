@@ -1,0 +1,24 @@
+class Solution {
+    public int longestValidParentheses(String s) {
+        Stack<Integer> stack = new Stack<>();
+        stack.push(-1); // Base index for the first valid substring
+        int maxLen = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                stack.push(i);
+            } else {
+                stack.pop();
+                if (stack.isEmpty()) {
+                    // Current ')' is a mismatch, use it as a new base
+                    stack.push(i);
+                } else {
+                    // Valid pair found, calculate length from the previous base
+                    maxLen = Math.max(maxLen, i - stack.peek());
+                }
+            }
+        }
+
+        return maxLen;
+    }
+}
