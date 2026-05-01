@@ -1,0 +1,51 @@
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    int specialTriplets(vector<int>& nums) {
+        int n = nums.size();
+        long long MOD = 1e9 + 7;
+        
+        // Use fixed-size arrays for speed; max nums[i] is 10^5, so target is 2*10^5
+        static int left[200001];
+        static int right[200001];
+        
+        // Reset static arrays for each call
+        for (int i = 0; i <= 200000; ++i) {
+            left[i] = 0;
+            right[i] = 0;
+        }
+        
+        // Fill initial right frequency count
+        for (int x : nums) {
+            right[x]++;
+        }
+        
+        long long totalTriplets = 0;
+        
+        for (int j = 0; j < n; ++j) {
+            int middleVal = nums[j];
+            
+            // Current element is the "middle", so it's no longer to the right
+            right[middleVal]--;
+            
+            // We need nums[i] == nums[j] * 2 and nums[k] == nums[j] * 2
+            long long target = (long long)middleVal * 2;
+            
+            if (target <= 200000) {
+                long long L = left[target];
+                long long R = right[target];
+                if (L > 0 && R > 0) {
+                    totalTriplets = (totalTriplets + (L * R)) % MOD;
+                }
+            }
+            
+            // Current element will be to the left for all subsequent middle elements
+            left[middleVal]++;
+        }
+        
+        return (int)totalTriplets;
+    }
+};
