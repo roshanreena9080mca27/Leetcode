@@ -1,0 +1,36 @@
+/**
+ * @param {number} rowsCount
+ * @param {number} colsCount
+ * @return {Array<Array<number>>}
+ */
+Array.prototype.snail = function(rowsCount, colsCount) {
+    // Check if the input dimensions match the array length
+    if (rowsCount * colsCount !== this.length) {
+        return [];
+    }
+
+    // Initialize the 2D array with empty rows
+    const result = Array.from({ length: rowsCount }, () => []);
+
+    for (let j = 0; j < colsCount; j++) {
+        // Determine if we are moving down (even columns) or up (odd columns)
+        const isMovingDown = j % 2 === 0;
+        
+        if (isMovingDown) {
+            for (let i = 0; i < rowsCount; i++) {
+                // Calculate original array index and push to the correct row
+                result[i].push(this[j * rowsCount + i]);
+            }
+        } else {
+            for (let i = rowsCount - 1; i >= 0; i--) {
+                // For upward movement, we reverse the row iteration
+                // But still push to result[i] to maintain column structure
+                result[i].push(this[j * rowsCount + (rowsCount - 1 - i)]);
+            }
+        }
+    }
+
+    return result;
+}
+
+
