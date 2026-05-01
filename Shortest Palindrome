@@ -1,0 +1,31 @@
+class Solution {
+    public String shortestPalindrome(String s) {
+        if (s == null || s.length() <= 1) return s;
+
+        // Step 1: Create the combined string: s + # + reverse(s)
+        String rev = new StringBuilder(s).reverse().toString();
+        String combined = s + "#" + rev;
+
+        // Step 2: Build the LPS table (KMP failure function)
+        int n = combined.length();
+        int[] lps = new int[n];
+        
+        for (int i = 1; i < n; i++) {
+            int j = lps[i - 1];
+            while (j > 0 && combined.charAt(i) != combined.charAt(j)) {
+                j = lps[j - 1];
+            }
+            if (combined.charAt(i) == combined.charAt(j)) {
+                j++;
+            }
+            lps[i] = j;
+        }
+
+        // Step 3: Use the last LPS value to find the longest palindromic prefix
+        int longestPalPrefixLen = lps[n - 1];
+        
+        // Step 4: Reverse the remaining suffix and prepend it to s
+        String suffixToPrepend = s.substring(longestPalPrefixLen);
+        return new StringBuilder(suffixToPrepend).reverse().toString() + s;
+    }
+}
