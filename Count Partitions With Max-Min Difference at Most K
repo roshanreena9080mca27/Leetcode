@@ -1,0 +1,46 @@
+#include <vector>
+#include <deque>
+
+using namespace std;
+
+class Solution {
+public:
+    int countPartitions(vector<int>& nums, int k) {
+        int n = nums.size();
+        int MOD = 1e9 + 7;
+        
+        vector<long long> dp(n + 1, 0);
+        vector<long long> prefixSum(n + 2, 0);
+        
+        dp[0] = 1;
+        prefixSum[1] = 1; // prefixSum[i] = dp[0] + ... + dp[i-1]
+
+        deque<int> maxDeque, minDeque;
+        int left = 0;
+
+        for (int i = 1; i <= n; ++i) {
+            int val = nums[i - 1];
+
+            // Maintain monotonic deques for max and min in current window
+            while (!maxDeque.empty() && nums[maxDeque.back()] <= val) maxDeque.pop_back();
+            while (!minDeque.empty() && nums[minDeque.back()] >= val) minDeque.pop_back();
+            maxDeque.push_back(i - 1);
+            minDeque.push_back(i - 1);
+
+            // Shrink window from the left if max - min > k
+            while (!maxDeque.empty() && !minDeque.empty() && 
+                   nums[maxDeque.front()] - nums[minDeque.front()] > k) {
+                left++;
+                if (maxDeque.front() < left) maxDeque.pop_front();
+                if (minDeque.front() < left) minDeque.pop_front();
+            }
+
+            // Valid segments end at i-1 and start anywhere from left to i-1.
+            // We need the sum: dp[left] + dp[left+1] + ... + dp[i-1]
+            dp[i] = (prefixSum[i] - prefixSum[left] + MOD) % MOD;
+            prefixSum[i + 1] = (prefixSum[i] + dp[i]) % MOD;
+        }
+
+        return dp[n];
+    }
+};
