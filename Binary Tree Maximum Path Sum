@@ -1,0 +1,43 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    private int maxSum;
+
+    public int maxPathSum(TreeNode root) {
+        maxSum = Integer.MIN_VALUE;
+        gainFromSubtree(root);
+        return maxSum;
+    }
+
+    private int gainFromSubtree(TreeNode node) {
+        if (node == null) return 0;
+
+        // Recursively get the max gain from left and right subtrees.
+        // If the gain is negative, we take 0 (meaning we don't include that branch).
+        int leftGain = Math.max(gainFromSubtree(node.left), 0);
+        int rightGain = Math.max(gainFromSubtree(node.right), 0);
+
+        // Price of a "complete path" passing through the current node
+        int currentPathSum = node.val + leftGain + rightGain;
+
+        // Update the global maximum
+        maxSum = Math.max(maxSum, currentPathSum);
+
+        // Return the max "branch" sum to the parent.
+        // We can only take the current node plus ONE of its subtrees.
+        return node.val + Math.max(leftGain, rightGain);
+    }
+}
