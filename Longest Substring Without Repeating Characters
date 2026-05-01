@@ -1,0 +1,30 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        // Use an array of 128 to store the last seen index of each ASCII character
+        vector<int> char_map(128, -1);
+        int left = 0;
+        int max_length = 0;
+        
+        for (int right = 0; right < s.length(); right++) {
+            // If the character was seen before and is inside our current window
+            if (char_map[s[right]] >= left) {
+                left = char_map[s[right]] + 1;
+            }
+            
+            // Record the current position of the character
+            char_map[s[right]] = right;
+            
+            // Calculate the window size
+            max_length = max(max_length, right - left + 1);
+        }
+        
+        return max_length;
+    }
+};
