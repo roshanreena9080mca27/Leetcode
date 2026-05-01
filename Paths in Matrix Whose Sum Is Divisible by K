@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int numberOfPaths(vector<vector<int>>& grid, int k) {
+        int m = grid.size();
+        int n = grid[0].size();
+        int MOD = 1e9 + 7;
+
+        // dp[i][j][rem] stores the number of paths to (i,j) with sum % k == rem
+        // Using a 3D vector. Note: m * n <= 5 * 10^4 and k <= 50.
+        vector<vector<vector<int>>> dp(m, vector<vector<int>>(n, vector<int>(k, 0)));
+
+        // Base case: Starting point
+        dp[0][0][grid[0][0] % k] = 1;
+
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                for (int rem = 0; rem < k; ++rem) {
+                    if (dp[i][j][rem] == 0) continue;
+
+                    // Move Right
+                    if (j + 1 < n) {
+                        int next_rem = (rem + grid[i][j + 1]) % k;
+                        dp[i][j + 1][next_rem] = (dp[i][j + 1][next_rem] + dp[i][j][rem]) % MOD;
+                    }
+
+                    // Move Down
+                    if (i + 1 < m) {
+                        int next_rem = (rem + grid[i + 1][j]) % k;
+                        dp[i + 1][j][next_rem] = (dp[i + 1][j][next_rem] + dp[i][j][rem]) % MOD;
+                    }
+                }
+            }
+        }
+
+        // Return the number of paths to the bottom-right corner with remainder 0
+        return dp[m - 1][n - 1][0];
+    }
+};
