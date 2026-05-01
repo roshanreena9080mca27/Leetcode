@@ -1,0 +1,59 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        List<String> result = new ArrayList<>();
+        int i = 0;
+        
+        while (i < words.length) {
+            int lineLength = words[i].length();
+            int last = i + 1;
+            
+            // Step 1: Find how many words fit in the current line
+            while (last < words.length) {
+                if (lineLength + 1 + words[last].length() > maxWidth) break;
+                lineLength += 1 + words[last].length();
+                last++;
+            }
+            
+            StringBuilder sb = new StringBuilder();
+            int numWords = last - i;
+            int numGaps = numWords - 1;
+            
+            // Step 2: Justify the line
+            // Rule: Last line or a line with only one word is left-justified
+            if (last == words.length || numWords == 1) {
+                for (int j = i; j < last; j++) {
+                    sb.append(words[j]);
+                    if (j < last - 1) sb.append(" ");
+                }
+                // Fill the remaining space
+                while (sb.length() < maxWidth) sb.append(" ");
+            } else {
+                // Fully justified: distribute spaces evenly
+                int totalSpaces = maxWidth - (lineLength - numGaps);
+                int spacesPerGap = totalSpaces / numGaps;
+                int extraSpaces = totalSpaces % numGaps;
+                
+                for (int j = i; j < last; j++) {
+                    sb.append(words[j]);
+                    if (j < last - 1) {
+                        // Standard spaces for the gap
+                        for (int s = 0; s < spacesPerGap; s++) sb.append(" ");
+                        // Add one of the "remainder" spaces to the leftmost gaps
+                        if (extraSpaces > 0) {
+                            sb.append(" ");
+                            extraSpaces--;
+                        }
+                    }
+                }
+            }
+            
+            result.add(sb.toString());
+            i = last; // Move to the next set of words
+        }
+        
+        return result;
+    }
+}
