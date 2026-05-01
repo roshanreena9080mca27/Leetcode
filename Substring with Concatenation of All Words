@@ -1,0 +1,56 @@
+#include <vector>
+#include <string>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> findSubstring(string s, vector<string>& words) {
+        vector<int> result;
+        if (s.empty() || words.empty()) return result;
+
+        int n = s.length();
+        int wordCount = words.size();
+        int wordLen = words[0].length();
+        int totalLen = wordCount * wordLen;
+
+        unordered_map<string, int> wordFreq;
+        for (const string& w : words) wordFreq[w]++;
+
+        // We only need to check offsets from 0 to wordLen - 1
+        for (int i = 0; i < wordLen; i++) {
+            int left = i, right = i, count = 0;
+            unordered_map<string, int> windowFreq;
+
+            while (right + wordLen <= n) {
+                string w = s.substr(right, wordLen);
+                right += wordLen;
+
+                if (wordFreq.count(w)) {
+                    windowFreq[w]++;
+                    count++;
+
+                    // If we have more occurrences of 'w' than needed, shrink from left
+                    while (windowFreq[w] > wordFreq[w]) {
+                        string leftWord = s.substr(left, wordLen);
+                        windowFreq[leftWord]--;
+                        count--;
+                        left += wordLen;
+                    }
+
+                    // If window size matches total concatenation length
+                    if (count == wordCount) {
+                        result.push_back(left);
+                    }
+                } else {
+                    // Word not in 'words', reset window
+                    windowFreq.clear();
+                    count = 0;
+                    left = right;
+                }
+            }
+        }
+        return result;
+    }
+};
