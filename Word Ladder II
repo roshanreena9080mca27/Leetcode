@@ -1,0 +1,81 @@
+import java.util.*;
+
+class Solution {
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        List<List<String>> res = new ArrayList<>();
+        Set<String> dict = new HashSet<>(wordList);
+        if (!dict.contains(endWord)) return res;
+
+        // BFS to build the distance map from beginWord to all reachable words
+        Map<String, Integer> distanceMap = new HashMap<>();
+        bfs(beginWord, endWord, dict, distanceMap);
+
+        // If endWord was never reached, return empty
+        if (!distanceMap.containsKey(endWord)) return res;
+
+        // DFS to reconstruct all paths from endWord back to beginWord
+        List<String> path = new LinkedList<>();
+        path.add(endWord);
+        dfs(endWord, beginWord, distanceMap, path, res);
+
+        return res;
+    }
+
+    private void bfs(String start, String end, Set<String> dict, Map<String, Integer> distanceMap) {
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(start);
+        distanceMap.put(start, 0);
+
+        while (!queue.isEmpty()) {
+            String curr = queue.poll();
+            int dist = distanceMap.get(curr);
+            
+            // Optimization: Stop if we've already reached endWord at a shorter level
+            if (curr.equals(end)) break;
+
+            char[] chars = curr.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                char oldChar = chars[i];
+                for (char c = 'a'; c <= 'z'; c++) {
+                    if (c == oldChar) continue;
+                    chars[i] = c;
+                    String next = new String(chars);
+
+                    if (dict.contains(next) && !distanceMap.containsKey(next)) {
+                        distanceMap.put(next, dist + 1);
+                        queue.offer(next);
+                    }
+                }
+                chars[i] = oldChar;
+            }
+        }
+    }
+
+    private void dfs(String curr, String start, Map<String, Integer> distanceMap, 
+                     List<String> path, List<List<String>> res) {
+        if (curr.equals(start)) {
+            List<String> validPath = new ArrayList<>(path);
+            Collections.reverse(validPath);
+            res.add(validPath);
+            return;
+        }
+
+        int currDist = distanceMap.get(curr);
+        char[] chars = curr.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char oldChar = chars[i];
+            for (char c = 'a'; c <= 'z'; c++) {
+                chars[i] = c;
+                String next = new String(chars);
+
+                // Only follow paths where distance is exactly 1 less
+                if (distanceMap.containsKey(next) && distanceMap.get(next) == currDist - 1) {
+                    path.add(next);
+                    dfs(next, start, distanceMap, path, res);
+                    path.remove(path.size() - 1); // Backtrack
+                }
+            }
+            chars[i] = oldChar;
+        }
+    }
+}
