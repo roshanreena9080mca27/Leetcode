@@ -1,0 +1,38 @@
+#include <vector>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+class Solution {
+public:
+    long long maxSubarraySum(vector<int>& nums, int k) {
+        int n = nums.size();
+        
+        // We only need to track the minimum prefix sum for each remainder (0 to k-1)
+        // Initialize with a very large value
+        vector<long long> min_prefix(k, LLONG_MAX);
+        
+        long long current_prefix_sum = 0;
+        long long max_sum = LLONG_MIN;
+
+        // Base case: prefix sum at index 0 is 0, and 0 % k is 0
+        min_prefix[0] = 0;
+
+        for (int j = 1; j <= n; ++j) {
+            current_prefix_sum += nums[j - 1];
+            int rem = j % k;
+            
+            // If we have previously seen a prefix sum with the same index remainder,
+            // the subarray between those two indices has a length divisible by k.
+            if (min_prefix[rem] != LLONG_MAX) {
+                max_sum = max(max_sum, current_prefix_sum - min_prefix[rem]);
+            }
+            
+            // Update the smallest prefix sum for this remainder to maximize future differences
+            min_prefix[rem] = min(min_prefix[rem], current_prefix_sum);
+        }
+
+        return max_sum;
+    }
+};
