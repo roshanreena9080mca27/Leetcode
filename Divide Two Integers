@@ -1,0 +1,31 @@
+#include <climits>
+
+class Solution {
+public:
+    int divide(int dividend, int divisor) {
+        // Special case for overflow
+        if (dividend == INT_MIN && divisor == -1) return INT_MAX;
+
+        // Determine sign
+        bool negative = (dividend < 0) ^ (divisor < 0);
+
+        // Convert both to negative to prevent overflow during abs()
+        long long d_end = abs((long long)dividend);
+        long long d_sor = abs((long long)divisor);
+        
+        long long quotient = 0;
+
+        // Bitwise division logic
+        while (d_end >= d_sor) {
+            long long temp = d_sor, multiple = 1;
+            while (d_end >= (temp << 1)) {
+                temp <<= 1;
+                multiple <<= 1;
+            }
+            d_end -= temp;
+            quotient += multiple;
+        }
+
+        return negative ? -quotient : quotient;
+    }
+};
