@@ -1,0 +1,21 @@
+class Solution {
+    public int countDigitOne(int n) {
+        int count = 0;
+        // i represents the current digit position (1, 10, 100, etc.)
+        for (long i = 1; i <= n; i *= 10) {
+            long divider = i * 10;
+            
+            // Number of full "divider" blocks * occurrences per block
+            count += (n / divider) * i;
+            
+            // Handle the remaining partial block
+            long currentDigit = (n / i) % 10;
+            if (currentDigit == 1) {
+                count += (n % i) + 1;
+            } else if (currentDigit > 1) {
+                count += i;
+            }
+        }
+        return count;
+    }
+}
