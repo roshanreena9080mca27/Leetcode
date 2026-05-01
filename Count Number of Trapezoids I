@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int countTrapezoids(vector<vector<int>>& points) {
+        long long MOD = 1e9 + 7;
+        unordered_map<int, int> y_counts;
+        
+        // Step 1: Count points at each y-level
+        for (const auto& p : points) {
+            y_counts[p[1]]++;
+        }
+        
+        vector<long long> level_pairs;
+        for (auto const& [y, count] : y_counts) {
+            if (count >= 2) {
+                // Step 2: Number of horizontal segments at this y-level (nC2)
+                level_pairs.push_back((long long)count * (count - 1) / 2);
+            }
+        }
+        
+        long long total_trapezoids = 0;
+        long long prefix_sum_pairs = 0;
+        
+        // Step 3: Combine pairs from different levels
+        // For each level, it can form trapezoids with all previously seen pairs
+        for (long long pairs : level_pairs) {
+            total_trapezoids = (total_trapezoids + (prefix_sum_pairs * pairs)) % MOD;
+            prefix_sum_pairs = (prefix_sum_pairs + pairs) % MOD;
+        }
+        
+        return (int)total_trapezoids;
+    }
+};
