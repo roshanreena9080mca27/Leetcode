@@ -1,0 +1,53 @@
+import java.util.HashMap;
+import java.util.Map;
+
+class Solution {
+    public String minWindow(String s, String t) {
+        if (s.length() < t.length()) return "";
+
+        // Character frequency map for string t
+        int[] targetMap = new int[128];
+        for (char c : t.toCharArray()) {
+            targetMap[c]++;
+        }
+
+        int left = 0, right = 0;
+        int minLen = Integer.MAX_VALUE;
+        int startIndex = 0;
+        int requiredCount = t.length();
+
+        // right pointer expands the window
+        while (right < s.length()) {
+            char rightChar = s.charAt(right);
+            
+            // If we need this character, decrease requiredCount
+            if (targetMap[rightChar] > 0) {
+                requiredCount--;
+            }
+            // Decrease frequency in map (can go negative if we have extra)
+            targetMap[rightChar]--;
+
+            // When window is valid, try to shrink from the left
+            while (requiredCount == 0) {
+                // Update the minimum window
+                if (right - left + 1 < minLen) {
+                    minLen = right - left + 1;
+                    startIndex = left;
+                }
+
+                char leftChar = s.charAt(left);
+                // We are removing this char, so increase its count in targetMap
+                targetMap[leftChar]++;
+                
+                // If the count becomes positive, it means we lack a required char
+                if (targetMap[leftChar] > 0) {
+                    requiredCount++;
+                }
+                left++;
+            }
+            right++;
+        }
+
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(startIndex, startIndex + minLen);
+    }
+}
