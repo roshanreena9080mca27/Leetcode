@@ -1,0 +1,38 @@
+import java.util.*;
+
+class Solution {
+    // Map to store memoized results for substrings
+    Map<String, List<String>> memo = new HashMap<>();
+
+    public List<String> wordBreak(String s, List<String> wordDict) {
+        // If we've already solved this substring, return the result
+        if (memo.containsKey(s)) {
+            return memo.get(s);
+        }
+
+        List<String> results = new ArrayList<>();
+        
+        // Base case: if the string is empty, return a list with an empty string
+        if (s.isEmpty()) {
+            results.add("");
+            return results;
+        }
+
+        for (String word : wordDict) {
+            // Check if the current substring starts with the dictionary word
+            if (s.startsWith(word)) {
+                // Recursively get sentences for the remaining suffix
+                List<String> subSentences = wordBreak(s.substring(word.length()), wordDict);
+                
+                for (String sub : subSentences) {
+                    // Combine current word with the suffix results
+                    String space = sub.isEmpty() ? "" : " ";
+                    results.add(word + space + sub);
+                }
+            }
+        }
+
+        memo.put(s, results);
+        return results;
+    }
+}
