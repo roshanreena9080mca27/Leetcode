@@ -1,0 +1,41 @@
+#include <vector>
+#include <unordered_map>
+#include <numeric>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int minSubarray(vector<int>& nums, int p) {
+        int n = nums.size();
+        long long total_sum = 0;
+        for (int num : nums) total_sum += num;
+        
+        int target = total_sum % p;
+        if (target == 0) return 0;
+
+        unordered_map<int, int> last_seen;
+        last_seen[0] = -1; // Base case: prefix sum 0 at index -1
+        
+        int cur_mod = 0;
+        int min_len = n;
+
+        for (int i = 0; i < n; ++i) {
+            cur_mod = (cur_mod + nums[i]) % p;
+            
+            // Calculate what remainder we need to have seen before
+            int needed = (cur_mod - target + p) % p;
+            
+            if (last_seen.count(needed)) {
+                min_len = min(min_len, i - last_seen[needed]);
+            }
+            
+            // Store the current index for this remainder
+            last_seen[cur_mod] = i;
+        }
+
+        // It is not allowed to remove the whole array (min_len == n)
+        return (min_len == n) ? -1 : min_len;
+    }
+};
